@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:shop/providers/cart.dart';
 import '../widgets/product_grid.dart';
-
+import '../widgets/badge.dart';
+import '../utils/app_rountes.dart';
 import "../enum/fliter_options.dart";
 
 class ProductOverviewScreen extends StatefulWidget {
@@ -19,26 +21,41 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         title: Text("Minha Loja"),
         actions: <Widget>[
           PopupMenuButton(
-              onSelected: (FilterOptions selecteValue) {
-                setState(() {
-                  if (selecteValue == FilterOptions.Favorite) {
-                    _showFavoriteOnly = true;
-                  } else {
-                    _showFavoriteOnly = false;
-                  }
-                });
+            onSelected: (FilterOptions selecteValue) {
+              setState(() {
+                if (selecteValue == FilterOptions.Favorite) {
+                  _showFavoriteOnly = true;
+                } else {
+                  _showFavoriteOnly = false;
+                }
+              });
+            },
+            icon: Icon(Icons.more_vert),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                child: Text("Somente Favoritos"),
+                value: FilterOptions.Favorite,
+              ),
+              PopupMenuItem(
+                child: Text("Todos"),
+                value: FilterOptions.All,
+              ),
+            ],
+          ),
+          Consumer<Cart>(
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  AppRountes.CART
+                );
               },
-              icon: Icon(Icons.more_vert),
-              itemBuilder: (_) => [
-                    PopupMenuItem(
-                      child: Text("Somente Favoritos"),
-                      value: FilterOptions.Favorite,
-                    ),
-                    PopupMenuItem(
-                      child: Text("Todos"),
-                      value: FilterOptions.All,
-                    ),
-                  ])
+            ),
+            builder: (_, cart, child) => Badge(
+              value: cart.itemCount.toString(),
+              child: child,
+            ),
+          ),
         ],
       ),
       body: ProductGrid(_showFavoriteOnly),
