@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/widgets/cart_item_widgets.dart';
 import '../providers/cart.dart';
+import '../providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Cart cart = Provider.of(context);
-    final cartItem = cart.items.values.toList();
+    final cartItems = cart.items.values.toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -42,9 +43,13 @@ class CartScreen extends StatelessWidget {
                   ),
                   Spacer(),
                   FlatButton(
-                    onPressed: () {},
-                    child: Text("Comprar"),
+                    child: Text("COMPRAR"),
                     textColor: Theme.of(context).primaryColor,
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false)
+                          .addOrder(cart);
+                      cart.clear();
+                    },
                   )
                 ],
               ),
@@ -54,7 +59,7 @@ class CartScreen extends StatelessWidget {
           Expanded(
               child: ListView.builder(
             itemCount: cart.itemsCount,
-            itemBuilder: (ctx, i) => CartItemWidgets(cartItem[i]),
+            itemBuilder: (ctx, i) => CartItemWidgets(cartItems[i]),
           )),
         ],
       ),
