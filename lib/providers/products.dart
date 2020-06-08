@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import "../providers/product.dart";
 import '../data/dummy_data.dart';
@@ -15,10 +17,30 @@ class Products with ChangeNotifier {
     return _items.where((prod) => prod.isFavorite).toList();
   }
 
-  void addProduct(Product product) {
-    _items.add(product);
+  void addProduct(Product newProduct) {
+    _items.add(Product(
+      id: Random().nextDouble().toString(),
+      description: newProduct.description,
+      imageUrl: newProduct.imageUrl,
+      price: newProduct.price,
+      title: newProduct.title,
+    ));
     notifyListeners();
   }
+
+  void updateProduct(Product product) {
+    if (product == null || product.id == null) {
+      return;
+    }
+
+    final index = _items.indexWhere((prod) => prod.id == product.id);
+    if (index >= 0) {
+      _items[index] = product;
+      notifyListeners();
+    }
+  }
+
+  void deleteProduct(Product excluirProduct) {}
 }
 
 // bool _showFavoriteOnly = false;

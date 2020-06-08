@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../providers/product.dart';
+import '../utils/app_rountes.dart';
 
 class ProductItem extends StatelessWidget {
   final Product product;
@@ -16,12 +17,27 @@ class ProductItem extends StatelessWidget {
       title: Text(product.title),
       trailing: Container(
         width: 100,
-        child: Row(
-          children: <Widget>[
-            IconButton(icon: Icon(Icons.edit, color: Theme.of(context).primaryColor, ), onPressed: () {},),
-             IconButton(icon: Icon(Icons.delete, color: Theme.of(context).errorColor, ), onPressed: () {},),
-          ]
-        ),
+        child: Row(children: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.edit,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                AppRountes.PRODUCTS_FORM,
+                arguments: product,
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.delete,
+              color: Theme.of(context).errorColor,
+            ),
+            onPressed: () {},
+          ),
+        ]),
       ),
     );
   }
