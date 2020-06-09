@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import "../providers/product.dart";
 import '../data/dummy_data.dart';
 
@@ -18,6 +20,18 @@ class Products with ChangeNotifier {
   }
 
   void addProduct(Product newProduct) {
+    const url = "https://flutter-shopc.firebaseio.com/products.json";
+    http.post(
+      url,
+      body: json.encode({
+        "title": newProduct.title,
+        "description": newProduct.description,
+        "price": newProduct.price,
+        "imageUrl": newProduct.imageUrl,
+        "isFavorite": newProduct.isFavorite,
+      }),
+    );
+
     _items.add(Product(
       id: Random().nextDouble().toString(),
       description: newProduct.description,
@@ -40,7 +54,13 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(Product excluirProduct) {}
+  void deleteProduct(String id) {
+    final index = _items.indexWhere((prod) => prod.id == id);
+    if (index >= 0) {
+      _items.removeWhere((prod) => prod.id == id);
+      notifyListeners();
+    }
+  }
 }
 
 // bool _showFavoriteOnly = false;
