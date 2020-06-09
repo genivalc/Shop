@@ -19,9 +19,9 @@ class Products with ChangeNotifier {
     return _items.where((prod) => prod.isFavorite).toList();
   }
 
-  void addProduct(Product newProduct) {
+  Future<void> addProduct(Product newProduct) {
     const url = "https://flutter-shopc.firebaseio.com/products.json";
-    http.post(
+    return http.post(
       url,
       body: json.encode({
         "title": newProduct.title,
@@ -30,16 +30,16 @@ class Products with ChangeNotifier {
         "imageUrl": newProduct.imageUrl,
         "isFavorite": newProduct.isFavorite,
       }),
-    );
-
-    _items.add(Product(
-      id: Random().nextDouble().toString(),
-      description: newProduct.description,
-      imageUrl: newProduct.imageUrl,
-      price: newProduct.price,
-      title: newProduct.title,
-    ));
-    notifyListeners();
+    ).then((response) {
+      _items.add(Product(
+        id: json.decode(response.body)['name'],
+        description: newProduct.description,
+        imageUrl: newProduct.imageUrl,
+        price: newProduct.price,
+        title: newProduct.title,
+      ));
+      notifyListeners();
+    });
   }
 
   void updateProduct(Product product) {
