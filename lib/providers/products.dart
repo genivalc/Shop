@@ -3,11 +3,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/exceptions/http_exception.dart';
 import "../providers/product.dart";
 import '../data/dummy_data.dart';
 
 class Products with ChangeNotifier {
-  List<Product> _items = DUMMY_PRODUCTS;
+  final String _baseUrl = "https://flutter-shopc.firebaseio.com/products";
+  List<Product> _items = [];
 
   List<Product> get items => [..._items];
 
@@ -19,10 +21,30 @@ class Products with ChangeNotifier {
     return _items.where((prod) => prod.isFavorite).toList();
   }
 
-  Future<void> addProduct(Product newProduct) {
-    const url = "https://flutter-shopc.firebaseio.com/products.json";
-    return http.post(
-      url,
+  Future<void> loadProducts() async {
+    final response = await http.get("$_baseUrl.json");
+    Map<String, dynamic> data = json.decode(response.body);
+    _items.clear();
+    if (data != null) {
+      data.forEach((productID, productData) {
+        _items.add(Product(
+          id: productID,
+          description: productData["description"],
+          imageUrl: productData["imageUrl"],
+          price: productData["price"],
+          title: productData["title"],
+          isFavorite: productData["isFavorite"],
+        ));
+      });
+      notifyListeners();
+    }
+
+    return Future.value();
+  }
+
+  Future<void> addProduct(Product newProduct) async {
+    final response = await http.post(
+      "$_baseUrl.json",
       body: json.encode({
         "title": newProduct.title,
         "description": newProduct.description,
@@ -30,35 +52,54 @@ class Products with ChangeNotifier {
         "imageUrl": newProduct.imageUrl,
         "isFavorite": newProduct.isFavorite,
       }),
-    ).then((response) {
-      _items.add(Product(
-        id: json.decode(response.body)['name'],
-        description: newProduct.description,
-        imageUrl: newProduct.imageUrl,
-        price: newProduct.price,
-        title: newProduct.title,
-      ));
-      notifyListeners();
-    });
+    );
+
+    _items.add(Product(
+      id: json.decode(response.body)['name'],
+      description: newProduct.description,
+      imageUrl: newProduct.imageUrl,
+      price: newProduct.price,
+      title: newProduct.title,
+    ));
+    notifyListeners();
   }
 
-  void updateProduct(Product product) {
+
+
+  Future<void> updateProduct(Product product) async {
     if (product == null || product.id == null) {
       return;
     }
 
     final index = _items.indexWhere((prod) => prod.id == product.id);
     if (index >= 0) {
+      await http.patch("$_baseUrl/${product.id}.json", body: {
+        json.encode({
+          "title": product.title,
+          "description": product.description,
+          "price": product.price,
+          "imageUrl": product.imageUrl,
+        })
+      });
       _items[index] = product;
       notifyListeners();
     }
   }
 
-  void deleteProduct(String id) {
+  Future<void> deleteProduct(String id) async {
     final index = _items.indexWhere((prod) => prod.id == id);
     if (index >= 0) {
-      _items.removeWhere((prod) => prod.id == id);
+      final product = _items[index];
+      _items.remove(product);
       notifyListeners();
+
+      final response = await http.delete("$_baseUrl/${product.id}.json");
+
+      if (response.statusCode >= 400) {
+        _items.insert(index, product);
+        notifyListeners();
+        throw HttpException("Ocorreu um erro na exclusão do produto.");
+      }
     }
   }
 }
