@@ -28,43 +28,43 @@ class _OrderWidgetState extends State<OrderWidget> {
             trailing: IconButton(
               icon: Icon(Icons.expand_more),
               onPressed: () {
-               setState(() {
+                setState(() {
                   _expanded = !_expanded;
-               });
+                });
               },
             ),
           ),
-          if(_expanded)
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal : 15,
-              vertical: 4,
-            ),
-            height: (widget.order.product.length * 25.0) + 12,
-            child: ListView(
-              children: widget.order.product.map((product) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      product.title.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+          if (_expanded)
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 4,
+              ),
+              height: (widget.order.products.length * 25.0) + 12,
+              child: ListView(
+                children: widget.order.products.map((product) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        product.title.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                                        Text(
-                      "${product.quantity} x R\$ ${product.price}" ,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.blueGrey,
+                      Text(
+                        "${product.quantity} x R\$ ${product.price}",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.blueGrey,
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              }).toList(),
+                    ],
+                  );
+                }).toList(),
+              ),
             ),
-          ),
         ],
       ),
     );
