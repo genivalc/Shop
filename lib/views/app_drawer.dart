@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../utils/app_rountes.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -27,7 +28,7 @@ class AppDrawer extends StatelessWidget {
               Navigator.of(context).pushReplacementNamed(AppRountes.ORDERS);
             },
           ),
-                    Divider(),
+          Divider(),
           ListTile(
             leading: Icon(Icons.edit),
             title: Text("Gerenciar Produtos"),
@@ -36,8 +37,6 @@ class AppDrawer extends StatelessWidget {
             },
           ),
         ],
-        
-        
       ),
     );
   }

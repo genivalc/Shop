@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import "../providers/product.dart";
 import "../providers/cart.dart";
 import '../utils/app_rountes.dart';
@@ -45,17 +46,21 @@ class ProductGridItem extends StatelessWidget {
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
               Scaffold.of(context).hideCurrentSnackBar();
-              Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text(
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
                     "Produto adicionado com sucesso!",
-                    textAlign: TextAlign.start,), // aviso no roda pé da aplicação
-                duration: Duration(seconds: 2),
-                action: SnackBarAction(
+                    textAlign: TextAlign.start,
+                  ), // aviso no roda pé da aplicação
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
                     label: "DESFAZER",
                     onPressed: () {
                       cart.removeSingleItem(product.id);
-                    }),
-              ));
+                    },
+                  ),
+                ),
+              );
               cart.addItem(product);
             },
             color: Theme.of(context).accentColor,

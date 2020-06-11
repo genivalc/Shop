@@ -40,15 +40,18 @@ class Cart with ChangeNotifier {
 
   void addItem(Product product) {
     if (_items.containsKey(product.id)) {
-      _items.update(product.id, (existingItem) {
-        return CartItem(
-          id: existingItem.id,
-          productId: product.id,
-          price: existingItem.price,
-          quantity: existingItem.quantity + 1,
-          title: existingItem.title,
-        );
-      });
+      _items.update(
+        product.id,
+        (existingItem) {
+          return CartItem(
+            id: existingItem.id,
+            productId: product.id,
+            price: existingItem.price,
+            quantity: existingItem.quantity + 1,
+            title: existingItem.title,
+          );
+        },
+      );
     } else {
       _items.putIfAbsent(
           product.id,

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +37,6 @@ class _ProductFromScreen extends State<ProductFromScreen> {
         _formData["description"] = product.description;
         _formData["price"] = product.price;
         _formData["imageUrl"] = product.imageUrl;
-
         _imageUrlController.text = _formData["imageUrl"];
       } else {
         _formData["price"] = '';
@@ -158,7 +155,6 @@ class _ProductFromScreen extends State<ProductFromScreen> {
                       validator: (value) {
                         bool isEmpty = value.trim().isEmpty;
                         bool isInvalid = value.trim().length < 3;
-
                         if (isEmpty || isInvalid) {
                           return "Informe um título válido";
                         }

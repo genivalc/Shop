@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/widgets/cart_item_widgets.dart';
+
 import '../providers/cart.dart';
 import '../providers/orders.dart';
 
@@ -81,14 +82,18 @@ class _OrderButtonState extends State<OrderButton> {
       onPressed: widget.cart.totalAmount == 0
           ? null
           : () async {
-              setState(() {
-                _isLoading = true;
-              });
+              setState(
+                () {
+                  _isLoading = true;
+                },
+              );
               await Provider.of<Orders>(context, listen: false)
                   .addOrder(widget.cart);
-              setState(() {
-                _isLoading = false;
-              });
+              setState(
+                () {
+                  _isLoading = false;
+                },
+              );
               widget.cart.clear();
             },
     );

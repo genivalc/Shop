@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+import 'package:shop/utils/constants.dart';
 
 import './cart.dart';
 
@@ -22,9 +21,7 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
- 
-
-  final String _baseUrl = "https://flutter-shopc.firebaseio.com/orders";
+  final String _baseUrl = "${Constants.BASE_API_URL}/orders";
   List<Order> _items = [];
 
   List<Order> get items {
@@ -70,19 +67,23 @@ class Orders with ChangeNotifier {
     final date = DateTime.now();
     final response = await http.post(
       "$_baseUrl.json",
-      body: json.encode({
-        'total': cart.totalAmount,
-        'date': date.toIso8601String(),
-        'products': cart.items.values
-            .map((cartItem) => {
+      body: json.encode(
+        {
+          'total': cart.totalAmount,
+          'date': date.toIso8601String(),
+          'products': cart.items.values
+              .map(
+                (cartItem) => {
                   'id': cartItem.id,
                   'productId': cartItem.productId,
                   'title': cartItem.title,
                   'quantity': cartItem.quantity,
                   'price': cartItem.price,
-                })
-            .toList()
-      }),
+                },
+              )
+              .toList()
+        },
+      ),
     );
 
     _items.insert(

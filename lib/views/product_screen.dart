@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shop/views/app_drawer.dart';
 import 'package:shop/widgets/product_item.dart';
-import '../providers/products.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/products.dart';
 import '../utils/app_rountes.dart';
 
 class ProductsScreen extends StatelessWidget {
-  Future<void> _refreshProducts(BuildContext context)  {
-   return  Provider.of<Products>(context, listen: false).loadProducts();
+  Future<void> _refreshProducts(BuildContext context) {
+    return Provider.of<Products>(context, listen: false).loadProducts();
   }
 
   @override
@@ -19,16 +20,18 @@ class ProductsScreen extends StatelessWidget {
         title: Text("Gerenciar Produtos"),
         actions: <Widget>[
           IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                Navigator.of(context).pushNamed(
-                  AppRountes.PRODUCTS_FORM,
-                );
-              }),
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                AppRountes.PRODUCTS_FORM,
+              );
+            },
+          ),
         ],
       ),
       drawer: AppDrawer(),
-      body: RefreshIndicator(  onRefresh: () => _refreshProducts(context),
+      body: RefreshIndicator(
+        onRefresh: () => _refreshProducts(context),
         child: Padding(
           padding: EdgeInsets.all(8),
           child: ListView.builder(

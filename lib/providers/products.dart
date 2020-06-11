@@ -1,14 +1,14 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/exceptions/http_exception.dart';
+import 'package:shop/utils/constants.dart';
+
 import "../providers/product.dart";
-import '../data/dummy_data.dart';
 
 class Products with ChangeNotifier {
-  final String _baseUrl = "https://flutter-shopc.firebaseio.com/products";
+  final String _baseUrl = "${Constants.BASE_API_URL}/products";
   List<Product> _items = [];
 
   List<Product> get items => [..._items];
@@ -64,8 +64,6 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-
-
   Future<void> updateProduct(Product product) async {
     if (product == null || product.id == null) {
       return;
@@ -103,13 +101,3 @@ class Products with ChangeNotifier {
     }
   }
 }
-
-// bool _showFavoriteOnly = false;
-// void showFavoriteOnly() {
-//   _showFavoriteOnly = true;
-//   notifyListeners();
-// }
-//   void showAll() {
-//   _showFavoriteOnly = false;
-//   notifyListeners();
-// }

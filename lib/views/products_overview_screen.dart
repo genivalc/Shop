@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/providers/cart.dart';
-import 'package:shop/providers/product.dart';
 import 'package:shop/providers/products.dart';
 import 'package:shop/views/app_drawer.dart';
+
 import '../widgets/product_grid.dart';
 import '../widgets/badge.dart';
 import '../utils/app_rountes.dart';
@@ -21,11 +21,15 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<Products>(context, listen: false).loadProducts().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    });
+    Provider.of<Products>(context, listen: false).loadProducts().then(
+      (_) {
+        setState(
+          () {
+            _isLoading = false;
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -36,13 +40,15 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         actions: <Widget>[
           PopupMenuButton(
             onSelected: (FilterOptions selecteValue) {
-              setState(() {
-                if (selecteValue == FilterOptions.Favorite) {
-                  _showFavoriteOnly = true;
-                } else {
-                  _showFavoriteOnly = false;
-                }
-              });
+              setState(
+                () {
+                  if (selecteValue == FilterOptions.Favorite) {
+                    _showFavoriteOnly = true;
+                  } else {
+                    _showFavoriteOnly = false;
+                  }
+                },
+              );
             },
             icon: Icon(Icons.more_vert),
             itemBuilder: (_) => [
@@ -70,9 +76,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           ),
         ],
       ),
-      body: _isLoading ? Center(
-        child: CircularProgressIndicator() ,
-      ) : ProductGrid(_showFavoriteOnly),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductGrid(_showFavoriteOnly),
       drawer: AppDrawer(),
     );
   }
