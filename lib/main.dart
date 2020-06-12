@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import "package:provider/provider.dart";
-import 'package:shop/views/product_screen.dart';
+import 'package:provider/provider.dart';
 
-import './views/auth_screen.dart';
+import './utils/app_routes.dart';
+
+import './views/auth_home_screen.dart';
 import './views/product_detail_screen.dart';
 import './views/cart_screen.dart';
-import './views/products_overview_screen.dart';
 import './views/orders_screen.dart';
-import './views/product_from_screen.dart';
+import './views/products_screen.dart';
+import './views/product_form_screen.dart';
 
 import './providers/products.dart';
 import './providers/cart.dart';
 import './providers/orders.dart';
 import './providers/auth.dart';
-
-import './utils/app_rountes.dart';
 
 void main() => runApp(MyApp());
 
@@ -24,16 +23,26 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => Products(),
+          create: (_) => new Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (_) => new Products(),
+          update: (ctx, auth, previousProducts) => new Products(
+            auth.token,
+            auth.userId,
+            previousProducts.items,
+          ),
         ),
         ChangeNotifierProvider(
-          create: (_) => Cart(),
+          create: (_) => new Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => Orders(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => Auth(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (_) => new Orders(),
+          update: (ctx, auth, previousOrders) => new Orders(
+            auth.token,
+            auth.userId,
+            previousOrders.items,
+          ),
         ),
       ],
       child: MaterialApp(
@@ -41,17 +50,15 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
-          fontFamily: "Lato",
+          fontFamily: 'Lato',
         ),
-        home: AuthScreen(),
-        debugShowCheckedModeBanner: false,
         routes: {
-          AppRountes.HOME: (ctx) =>ProductOverviewScreen(),
-          AppRountes.PRODUCT_DETAIL: (ctx) => ProductDetailScreen(),
-          AppRountes.CART: (ctx) => CartScreen(),
-          AppRountes.ORDERS: (ctx) => OrdersScreen(),
-          AppRountes.PRODUCTS: (ctx) => ProductsScreen(),
-          AppRountes.PRODUCTS_FORM: (ctx) => ProductFromScreen(),
+          AppRoutes.AUTH_HOME: (ctx) => AuthOrHomeScreen(),
+          AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailScreen(),
+          AppRoutes.CART: (ctx) => CartScreen(),
+          AppRoutes.ORDERS: (ctx) => OrdersScreen(),
+          AppRoutes.PRODUCTS: (ctx) => ProductsScreen(),
+          AppRoutes.PRODUCT_FORM: (ctx) => ProductFormScreen(),
         },
       ),
     );

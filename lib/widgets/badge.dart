@@ -5,7 +5,11 @@ class Badge extends StatelessWidget {
   final String value;
   final Color color;
 
-  Badge({@required this.child, @required this.value, this.color});
+  Badge({
+    @required this.child,
+    @required this.value,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +21,9 @@ class Badge extends StatelessWidget {
           right: 8,
           top: 8,
           child: Container(
-            padding: EdgeInsets.all(1),
+            padding: EdgeInsets.all(2),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               color: color != null ? color : Theme.of(context).accentColor,
             ),
             constraints: BoxConstraints(
@@ -30,11 +34,11 @@ class Badge extends StatelessWidget {
               value,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
               ),
             ),
           ),
-        ),
+        )
       ],
     );
   }

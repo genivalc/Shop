@@ -1,41 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import "../providers/product.dart";
-import "../providers/cart.dart";
-import '../utils/app_rountes.dart';
+import 'package:shop/providers/auth.dart';
+import '../providers/product.dart';
+import '../providers/cart.dart';
+import '../utils/app_routes.dart';
 
 class ProductGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Product product =
-        Provider.of<Product>(context, listen: false); //não vai mudar o produto
-    final Cart cart = Provider.of<Cart>(context, listen: false);
+    final Product product = Provider.of(context, listen: false);
+    final Cart cart = Provider.of(context, listen: false);
+    final Auth auth = Provider.of(context, listen: false);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                AppRountes.PRODUCT_DETAIL,
-                arguments: product,
-              );
-            },
-            child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.cover,
-            )),
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              AppRoutes.PRODUCT_DETAIL,
+              arguments: product,
+            );
+          },
+          child: Image.network(
+            product.imageUrl,
+            fit: BoxFit.cover,
+          ),
+        ),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
-            //produto modificado no lugar especifico
             builder: (ctx, product, _) => IconButton(
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
-              onPressed: () {
-                product.toggleFavorite();
-              },
               color: Theme.of(context).accentColor,
+              onPressed: () {
+                product.toggleFavorite(auth.token, auth.userId);
+              },
             ),
           ),
           title: Text(
@@ -44,17 +45,17 @@ class ProductGridItem extends StatelessWidget {
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
+            color: Theme.of(context).accentColor,
             onPressed: () {
               Scaffold.of(context).hideCurrentSnackBar();
               Scaffold.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    "Produto adicionado com sucesso!",
-                    textAlign: TextAlign.start,
-                  ), // aviso no roda pé da aplicação
+                    'Produto adicionado com sucesso!',
+                  ),
                   duration: Duration(seconds: 2),
                   action: SnackBarAction(
-                    label: "DESFAZER",
+                    label: 'DESFAZER',
                     onPressed: () {
                       cart.removeSingleItem(product.id);
                     },
@@ -63,7 +64,6 @@ class ProductGridItem extends StatelessWidget {
               );
               cart.addItem(product);
             },
-            color: Theme.of(context).accentColor,
           ),
         ),
       ),

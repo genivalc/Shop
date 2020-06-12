@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/exceptions/auth_exception.dart';
 import 'package:shop/providers/auth.dart';
 
-import '../enum/auth_mode.dart';
+enum AuthMode { Signup, Login }
 
 class AuthCard extends StatefulWidget {
   @override
@@ -16,14 +17,33 @@ class _AuthCardState extends State<AuthCard> {
   final _passwordController = TextEditingController();
 
   final Map<String, String> _authData = {
-    "email": "",
-    "password": "",
+    'email': '',
+    'password': '',
   };
+
+  void _showErrorDialog(String msg) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Ocorreu um erro!'),
+        content: Text(msg),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Fechar'),
+          )
+        ],
+      ),
+    );
+  }
 
   Future<void> _submit() async {
     if (!_form.currentState.validate()) {
       return;
     }
+
     setState(() {
       _isLoading = true;
     });
@@ -32,12 +52,22 @@ class _AuthCardState extends State<AuthCard> {
 
     Auth auth = Provider.of(context, listen: false);
 
-    if (_authMode == AuthMode.Login) {
-    } else {
-      await auth.signup(
-        _authData["email"],
-        _authData["password"],
-      );
+    try {
+      if (_authMode == AuthMode.Login) {
+        await auth.login(
+          _authData["email"],
+          _authData["password"],
+        );
+      } else {
+        await auth.signup(
+          _authData["email"],
+          _authData["password"],
+        );
+      }
+    } on AuthException catch (error) {
+      _showErrorDialog(error.toString());
+    } catch (error) {
+      _showErrorDialog("Ocorreu um erro inesperado!");
     }
 
     setState(() {
@@ -45,21 +75,15 @@ class _AuthCardState extends State<AuthCard> {
     });
   }
 
-  void _swichAuthMode() {
+  void _switchAuthMode() {
     if (_authMode == AuthMode.Login) {
-      setState(
-        () {
-          _authMode = AuthMode.Signup;
-        },
-      );
+      setState(() {
+        _authMode = AuthMode.Signup;
+      });
     } else {
-      if (_authMode == AuthMode.Signup) {
-        setState(
-          () {
-            _authMode = AuthMode.Signup;
-          },
-        );
-      }
+      setState(() {
+        _authMode = AuthMode.Login;
+      });
     }
   }
 
@@ -81,41 +105,36 @@ class _AuthCardState extends State<AuthCard> {
           child: Column(
             children: <Widget>[
               TextFormField(
-                decoration: InputDecoration(labelText: "E-mail"),
+                decoration: InputDecoration(labelText: 'E-mail'),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value.isEmpty || !value.contains("@")) {
-                    return "Informe um e-mail válido";
-                  }
-                  if (value.isEmpty || !value.contains(".com")) {
-                    return "Informe um e-mail válido";
+                  if (value.isEmpty || !value.contains('@')) {
+                    return "Informe um e-mail válido!";
                   }
                   return null;
                 },
-                onSaved: (value) => _authData["email"] = value,
+                onSaved: (value) => _authData['email'] = value,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: "Senha"),
+                decoration: InputDecoration(labelText: 'Senha'),
                 controller: _passwordController,
                 obscureText: true,
-                keyboardType: TextInputType.visiblePassword,
                 validator: (value) {
                   if (value.isEmpty || value.length < 5) {
-                    return "Informe uma senha válida";
+                    return "Informe uma senha válida!";
                   }
                   return null;
                 },
-                onSaved: (value) => _authData["password"] = value,
+                onSaved: (value) => _authData['password'] = value,
               ),
               if (_authMode == AuthMode.Signup)
                 TextFormField(
-                  decoration: InputDecoration(labelText: "Confirmar Senha"),
+                  decoration: InputDecoration(labelText: 'Confirmar Senha'),
                   obscureText: true,
-                  keyboardType: TextInputType.visiblePassword,
                   validator: _authMode == AuthMode.Signup
                       ? (value) {
                           if (value != _passwordController.text) {
-                            return "Informe uma senha válida";
+                            return "Senha são diferentes!";
                           }
                           return null;
                         }
@@ -136,18 +155,17 @@ class _AuthCardState extends State<AuthCard> {
                     vertical: 8.0,
                   ),
                   child: Text(
-                    _authMode == AuthMode.Login
-                        ? "Entrar".toUpperCase()
-                        : "Registrar".toUpperCase(),
+                    _authMode == AuthMode.Login ? 'ENTRAR' : 'REGISTRAR',
                   ),
                   onPressed: _submit,
                 ),
               FlatButton(
-                onPressed: _swichAuthMode,
+                onPressed: _switchAuthMode,
                 child: Text(
-                    "ALTERNAR P/ ${_authMode == AuthMode.Login ? "REGISTRAR" : "LOGIN"}"),
+                  "ALTERNAR P/ ${_authMode == AuthMode.Login ? 'REGISTRAR' : 'LOGIN'}",
+                ),
                 textColor: Theme.of(context).primaryColor,
-              )
+              ),
             ],
           ),
         ),
