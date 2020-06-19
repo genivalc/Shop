@@ -1,2 +1,2 @@
-🚧 Em construção... 🚧
+🚧 Em construção... 🚧.
 
